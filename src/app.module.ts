@@ -6,11 +6,13 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
+import { AuthModule } from './auth/auth.module';
+import { CoreModule } from './core/core.module';
 
 @Module({
   imports: [
     GraphQLModule.forRoot({
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      autoSchemaFile: join(process.cwd(), 'src/schema.graphql'),
       sortSchema: true,
       installSubscriptionHandlers: true,
     }),
@@ -28,6 +30,8 @@ import { join } from 'path';
       },
     }),
     UsersModule,
+    AuthModule,
+    CoreModule,
   ],
   controllers: [AppController],
   providers: [AppService],

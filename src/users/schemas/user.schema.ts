@@ -14,16 +14,16 @@ export type UserDocument = User & Document;
   },
 })
 export class User {
-  @Prop({ unique: true, index: true })
+  @Prop({ unique: true, index: true, lowercase: true, trim: true })
   email: string;
 
-  @Prop()
+  @Prop({ trim: true })
   password: string;
 
-  @Prop()
+  @Prop({ lowercase: true, trim: true })
   name: string;
 
-  @Prop()
+  @Prop({ lowercase: true, trim: true })
   lastname: string;
 }
 

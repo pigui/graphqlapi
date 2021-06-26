@@ -11,6 +11,9 @@ export class UserDto {
   @Field()
   email: string;
 
+  @Field()
+  lastname: string;
+
   @Field(() => Date)
   createdAt: Date;
 

@@ -29,6 +29,7 @@ type Mutation {
 }
 
 type Query {
+  currentUser: User!
   findUserByEmail(email: String!): User!
   findUserById(id: String!): User!
   findUsers: [User!]!

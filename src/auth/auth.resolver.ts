@@ -24,6 +24,6 @@ export class AuthResolver {
   @UseGuards(GqlAuthGuard)
   @Query(() => UserDto)
   currentUser(@CurrentUser() user: User) {
-    return this.usersService.findUserById((user as any).id);
+    return user;
   }
 }

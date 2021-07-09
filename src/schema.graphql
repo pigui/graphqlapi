@@ -7,6 +7,29 @@ type AccessToken {
   user: User!
 }
 
+type Blog {
+  comments: [Comment!]!
+  createdAt: DateTime!
+  description: String!
+  id: String!
+  title: String!
+  updatedAt: DateTime!
+  user: User!
+}
+
+type Comment {
+  createdAt: DateTime!
+  id: String!
+  text: String!
+  updatedAt: DateTime!
+  user: User!
+}
+
+input CreateBlogInput {
+  description: String!
+  title: String!
+}
+
 input CreateUserType {
   email: String!
   lastname: String!
@@ -25,11 +48,14 @@ input LoginInput {
 }
 
 type Mutation {
+  createBlog(createBlogInput: CreateBlogInput!): Blog!
   createUser(createUserInput: CreateUserType!): User!
 }
 
 type Query {
   currentUser: User!
+  findBlogById(id: String!): Blog!
+  findBlogs: [Blog!]!
   findUserByEmail(email: String!): User!
   findUserById(id: String!): User!
   findUsers: [User!]!
@@ -37,6 +63,7 @@ type Query {
 }
 
 type Subscription {
+  blogCreated: Blog!
   userCreated: User!
 }
 

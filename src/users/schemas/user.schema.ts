@@ -13,7 +13,7 @@ export type UserDocument = User & Document;
     },
   },
 })
-export class User {
+export class User extends Document {
   @Prop({ unique: true, index: true, lowercase: true, trim: true })
   email: string;
 

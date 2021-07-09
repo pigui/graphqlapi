@@ -30,6 +30,10 @@ input CreateBlogInput {
   title: String!
 }
 
+input CreateCommentInput {
+  text: String!
+}
+
 input CreateUserType {
   email: String!
   lastname: String!
@@ -49,7 +53,10 @@ input LoginInput {
 
 type Mutation {
   createBlog(createBlogInput: CreateBlogInput!): Blog!
+  createComment(blogId: String!, createCommentInput: CreateCommentInput!): Blog!
   createUser(createUserInput: CreateUserType!): User!
+  removeBlog(blogId: String!): Blog!
+  updateBlog(blogId: String!, updateBlogInput: UpdateBlogInput!): Blog!
 }
 
 type Query {
@@ -64,7 +71,15 @@ type Query {
 
 type Subscription {
   blogCreated: Blog!
+  blogRemoved: Blog!
+  blogUpdated: Blog!
+  blogUpdatedById(blogId: String!): Blog!
   userCreated: User!
+}
+
+input UpdateBlogInput {
+  description: String
+  title: String
 }
 
 type User {

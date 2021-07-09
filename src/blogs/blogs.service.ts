@@ -7,17 +7,22 @@ import { CreateBlogDto } from './dto/create-blog.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { switchMap, tap } from 'rxjs/operators';
 import { User } from 'src/users/schemas/user.schema';
+import { UpdateBlogDto } from './dto/update-blog.dto';
 
 @Injectable()
 export class BlogsService {
   constructor(@InjectModel(Blog.name) private blogModel: Model<Blog>) {}
 
   findBlogs(): Observable<Blog[]> {
-    return from(this.blogModel.find().populate('user'));
+    return from(
+      this.blogModel.find().populate('user').populate('comments.user'),
+    );
   }
 
   findBlogById(id: string): Observable<Blog> {
-    return from(this.blogModel.findById(id).populate('user'));
+    return from(
+      this.blogModel.findById(id).populate('user').populate('comments.user'),
+    );
   }
 
   createBlog(createBlogDto: CreateBlogDto, user: User): Observable<Blog> {
@@ -25,7 +30,12 @@ export class BlogsService {
     blog.user = user._id;
     return from(blog.save()).pipe(
       switchMap((blogNew) => {
-        return from(this.blogModel.findById(blogNew._id).populate('user'));
+        return from(
+          this.blogModel
+            .findById(blogNew._id)
+            .populate('user')
+            .populate('comments.user'),
+        );
       }),
     );
   }
@@ -39,8 +49,43 @@ export class BlogsService {
       switchMap((blog) => {
         const comment = new Comment();
         comment.text = createCommentDto.text;
-        return from(blog.save());
+        comment.user = user._id;
+        blog.comments.push(comment);
+        return from(blog.save()).pipe(
+          switchMap((blogNew) => {
+            return from(
+              this.blogModel
+                .findById(blogNew._id)
+                .populate('user')
+                .populate('comments.user'),
+            );
+          }),
+        );
       }),
+    );
+  }
+
+  updateBlog(blogId: string, updateBlogDto: UpdateBlogDto) {
+    return from(
+      this.blogModel.findByIdAndUpdate(blogId, { ...updateBlogDto }),
+    ).pipe(
+      switchMap((blogNew) => {
+        return from(
+          this.blogModel
+            .findById(blogNew._id)
+            .populate('user')
+            .populate('comments.user'),
+        );
+      }),
+    );
+  }
+
+  removeBlog(blogId: string): Observable<Blog> {
+    return from(
+      this.blogModel
+        .findByIdAndDelete(blogId)
+        .populate('user')
+        .populate('comments.user'),
     );
   }
 }

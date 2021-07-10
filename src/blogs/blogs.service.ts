@@ -45,7 +45,12 @@ export class BlogsService {
     createCommentDto: CreateCommentDto,
     user: User,
   ): Observable<Blog> {
-    return from(this.blogModel.findById(blogId)).pipe(
+    return from(
+      this.blogModel
+        .findById(blogId)
+        .populate('user')
+        .populate('comments.user'),
+    ).pipe(
       switchMap((blog) => {
         const comment = new Comment();
         comment.text = createCommentDto.text;
@@ -67,16 +72,10 @@ export class BlogsService {
 
   updateBlog(blogId: string, updateBlogDto: UpdateBlogDto) {
     return from(
-      this.blogModel.findByIdAndUpdate(blogId, { ...updateBlogDto }),
-    ).pipe(
-      switchMap((blogNew) => {
-        return from(
-          this.blogModel
-            .findById(blogNew._id)
-            .populate('user')
-            .populate('comments.user'),
-        );
-      }),
+      this.blogModel
+        .findByIdAndUpdate(blogId, { ...updateBlogDto }, { new: true })
+        .populate('user')
+        .populate('comments.user'),
     );
   }
 
@@ -84,6 +83,25 @@ export class BlogsService {
     return from(
       this.blogModel
         .findByIdAndDelete(blogId)
+        .populate('user')
+        .populate('comments.user'),
+    );
+  }
+
+  removeComment(blogId: string, commentId: string): Observable<Blog> {
+    return from(
+      this.blogModel
+        .findByIdAndUpdate(
+          blogId,
+          {
+            $pull: {
+              comments: {
+                _id: commentId,
+              },
+            },
+          },
+          { new: true },
+        )
         .populate('user')
         .populate('comments.user'),
     );

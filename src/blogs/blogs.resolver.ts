@@ -94,6 +94,24 @@ export class BlogsResolver {
       );
   }
 
+  @UseGuards(GqlAuthGuard)
+  @Mutation(() => BlogDto)
+  removeComment(
+    @Args('blogId') blogId: string,
+    @Args('commentId') commentId: string,
+  ): Observable<Blog> {
+    return this.blogsService.removeComment(blogId, commentId).pipe(
+      tap((blogUpdated: Blog) =>
+        this.pubSub.publish('blogUpdated', { blogUpdated }),
+      ),
+      tap((blogUpdated: Blog) =>
+        this.pubSub.publish('blogUpdatedById', {
+          blogUpdatedById: blogUpdated,
+        }),
+      ),
+    );
+  }
+
   @Subscription(() => BlogDto)
   blogCreated() {
     return this.pubSub.asyncIterator<Blog>('blogCreated');
